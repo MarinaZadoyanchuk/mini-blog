@@ -19,11 +19,11 @@ const currentPage = (state = 'login', action) => {
   switch (action.type) {
     case 'LOG_IN':
     case 'HOME':
-      return 'main';
+      return 'home';
     case 'LOG_OUT':
       return 'login';
     case 'GO_TO_CREATE_POST':
-      return 'createPost';
+      return 'create_post';
     case 'OWN_POSTS':
       return 'own_posts';
     case 'SHOW_POST':

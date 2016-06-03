@@ -21931,11 +21931,11 @@
 	  switch (action.type) {
 	    case 'LOG_IN':
 	    case 'HOME':
-	      return 'main';
+	      return 'home';
 	    case 'LOG_OUT':
 	      return 'login';
 	    case 'GO_TO_CREATE_POST':
-	      return 'createPost';
+	      return 'create_post';
 	    case 'OWN_POSTS':
 	      return 'own_posts';
 	    case 'SHOW_POST':
@@ -22099,16 +22099,13 @@
 
 	var App = function App(_ref) {
 	  var currentPage = _ref.currentPage;
-	  var currentUser = _ref.currentUser;
-	  var currentPost = _ref.currentPost;
 	  var onLogout = _ref.onLogout;
 	  var onGoToPage = _ref.onGoToPage;
-	  var posts = _ref.posts;
 
-	  var header = _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToPage: onGoToPage });
+	  var header = _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToPage: onGoToPage, currentPage: currentPage });
 
 	  switch (currentPage) {
-	    case 'main':
+	    case 'home':
 	      return _react2.default.createElement(
 	        'article',
 	        null,
@@ -22118,7 +22115,7 @@
 	    case 'login':
 	      return _react2.default.createElement(_login2.default, null);
 
-	    case 'createPost':
+	    case 'create_post':
 	      return _react2.default.createElement(
 	        'article',
 	        null,
@@ -40169,6 +40166,7 @@
 	var Header = function Header(_ref) {
 	  var onLogout = _ref.onLogout;
 	  var onGoToPage = _ref.onGoToPage;
+	  var currentPage = _ref.currentPage;
 
 	  return _react2.default.createElement(
 	    'header',
@@ -40182,7 +40180,8 @@
 	          filter: 'SHOW_ALL',
 	          onClick: function onClick() {
 	            onGoToPage('home');
-	          }
+	          },
+	          className: currentPage == 'home' ? 'active' : ''
 	        },
 	        'Home'
 	      ),
@@ -40191,7 +40190,9 @@
 	        {
 	          onClick: function onClick() {
 	            onGoToPage('go_to_create_post');
-	          } },
+	          },
+	          className: currentPage == 'create_post' ? 'active' : ''
+	        },
 	        'Create Post'
 	      ),
 	      _react2.default.createElement(
@@ -40200,7 +40201,8 @@
 	          filter: 'SHOW_OWN',
 	          onClick: function onClick() {
 	            onGoToPage('own_posts');
-	          }
+	          },
+	          className: currentPage == 'own_posts' ? 'active' : ''
 	        },
 	        'Only own posts'
 	      ),

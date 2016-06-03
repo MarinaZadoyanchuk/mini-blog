@@ -5,11 +5,11 @@ import CreatePostForm from '../containers/createPost';
 import PostsList from '../containers/postsList';
 import Post from '../containers/post';
 
-const App = ({currentPage, currentUser, currentPost, onLogout, onGoToPage, posts}) => {
-  const header = <Header onLogout={onLogout} onGoToPage={onGoToPage} />;
+const App = ({currentPage, onLogout, onGoToPage}) => {
+  const header = <Header onLogout={onLogout} onGoToPage={onGoToPage} currentPage={currentPage}/>;
   
   switch (currentPage) {
-    case 'main':
+    case 'home':
       return (
         <article>
           {header}
@@ -19,7 +19,7 @@ const App = ({currentPage, currentUser, currentPost, onLogout, onGoToPage, posts
     case 'login':
       return <Login />
 
-    case 'createPost':
+    case 'create_post':
       return (
         <article>
           {header}
