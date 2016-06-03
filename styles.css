@@ -1,0 +1,7 @@
+.postsList .post {
+    cursor: pointer;
+    border-bottom: 1px solid #e1e8ed;
+}
+.postsList .post:hover {
+    background-color: #f5f8fa;
+}

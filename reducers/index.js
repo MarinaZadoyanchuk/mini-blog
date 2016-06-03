@@ -23,9 +23,23 @@ const currentPage = (state = 'login', action) => {
       return 'login';
     case 'GO_TO_CREATE_POST':
       return 'createPost';
+    case 'ALL_POSTS':
+      return 'posts';
+    case 'OWN_POSTS':
+      return 'own_posts';
+    case 'SHOW_POST':
+      return 'post';
   }
   return state;
 };
+
+const currentPost = (state = null, action) => {
+  switch(action.type) {
+    case 'SHOW_POST':
+      return action.currentPost
+  }
+  return state;
+}
 
 const currentUser = (state = null, action) => {
   switch (action.type) {
@@ -43,12 +57,14 @@ const posts = (state = [], action) => {
       return [
         ...state,
         {
+          id: action.id,
           text: action.text,
           title: action.title,
-          user: action.userName
+          author: action.author
         }
       ]
   }
+  
   return state;
 }
 
@@ -56,6 +72,7 @@ export const mainReducer = combineReducers({
   users,
   currentPage,
   currentUser,
+  currentPost,
   posts
 })
 

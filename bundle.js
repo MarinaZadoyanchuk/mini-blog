@@ -21935,6 +21935,23 @@
 	      return 'login';
 	    case 'GO_TO_CREATE_POST':
 	      return 'createPost';
+	    case 'ALL_POSTS':
+	      return 'posts';
+	    case 'OWN_POSTS':
+	      return 'own_posts';
+	    case 'SHOW_POST':
+	      return 'post';
+	  }
+	  return state;
+	};
+
+	var currentPost = function currentPost() {
+	  var state = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case 'SHOW_POST':
+	      return action.currentPost;
 	  }
 	  return state;
 	};
@@ -21959,11 +21976,13 @@
 	  switch (action.type) {
 	    case 'CREATE_POST':
 	      return [].concat(_toConsumableArray(state), [{
+	        id: action.id,
 	        text: action.text,
 	        title: action.title,
-	        user: action.userName
+	        author: action.author
 	      }]);
 	  }
+
 	  return state;
 	};
 
@@ -21971,6 +21990,7 @@
 	  users: users,
 	  currentPage: currentPage,
 	  currentUser: currentUser,
+	  currentPost: currentPost,
 	  posts: posts
 	});
 
@@ -22003,8 +22023,8 @@
 	    onLogout: function onLogout() {
 	      return dispatch((0, _actions.logout)());
 	    },
-	    onGoToCreatePostPage: function onGoToCreatePostPage() {
-	      return dispatch((0, _actions.goToCreatePostPage)());
+	    onGoToPage: function onGoToPage(pageName) {
+	      return dispatch((0, _actions.goToPage)(pageName));
 	    }
 	  };
 	};
@@ -22039,32 +22059,62 @@
 
 	var _createPost2 = _interopRequireDefault(_createPost);
 
+	var _postsList = __webpack_require__(452);
+
+	var _postsList2 = _interopRequireDefault(_postsList);
+
+	var _post = __webpack_require__(454);
+
+	var _post2 = _interopRequireDefault(_post);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var App = function App(_ref) {
 	  var currentPage = _ref.currentPage;
 	  var currentUser = _ref.currentUser;
+	  var currentPost = _ref.currentPost;
 	  var onLogout = _ref.onLogout;
-	  var onGoToCreatePostPage = _ref.onGoToCreatePostPage;
+	  var onGoToPage = _ref.onGoToPage;
+	  var posts = _ref.posts;
 
-	  console.log(currentPage);
 	  switch (currentPage) {
 	    case 'main':
 	      return _react2.default.createElement(
 	        'div',
 	        null,
-	        _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToCreatePostPage: onGoToCreatePostPage }),
+	        _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToPage: onGoToPage }),
 	        currentUser
 	      );
 	    case 'login':
 	      return _react2.default.createElement(_login2.default, null);
 	    case 'createPost':
-	      console.log('hier create post');
 	      return _react2.default.createElement(
 	        'div',
 	        null,
-	        _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToCreatePostPage: onGoToCreatePostPage }),
-	        _react2.default.createElement('createPostForm', { userName: currentUser })
+	        _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToPage: onGoToPage }),
+	        _react2.default.createElement(_createPost2.default, null)
+	      );
+	    case 'posts':
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToPage: onGoToPage }),
+	        _react2.default.createElement(_postsList2.default, { filter: 'SHOW_ALL' })
+	      );
+	    case 'own_posts':
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToPage: onGoToPage }),
+	        _react2.default.createElement(_postsList2.default, { filter: 'SHOW_OWN' })
+	      );
+
+	    case 'post':
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToPage: onGoToPage }),
+	        _react2.default.createElement(_post2.default, null)
 	      );
 
 	  }
@@ -22128,27 +22178,32 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 	var Login = _react2.default.createClass({
 	  displayName: 'Login',
 	  onClick: function onClick() {
 	    this.props.onLogin(this.loginInput.getValue());
 	  },
 	  render: function render() {
-	    var _this = this;
+	    var _this = this,
+	        _React$createElement;
 
 	    return _react2.default.createElement(
-	      'div',
+	      'form',
 	      null,
-	      _react2.default.createElement(_reactBootstrap.Input, {
+	      _react2.default.createElement(_reactBootstrap.Input, (_React$createElement = {
 	        type: 'text',
 	        placeholder: 'Enter login',
+	        minlength: '5',
+	        required: true,
 	        label: 'Login',
 	        bsSize: 'medium',
 	        hasFeedback: true,
-	        ref: function ref(_ref) {
-	          return _this.loginInput = _ref;
-	        }
-	      }),
+	        pattern: '.{3,}'
+	      }, _defineProperty(_React$createElement, 'required', 'required'), _defineProperty(_React$createElement, 'ref', function ref(_ref) {
+	        return _this.loginInput = _ref;
+	      }), _React$createElement)),
 	      _react2.default.createElement(
 	        _reactBootstrap.Button,
 	        {
@@ -40004,18 +40059,27 @@
 	  };
 	};
 
-	var goToCreatePostPage = exports.goToCreatePostPage = function goToCreatePostPage() {
+	var goToPage = exports.goToPage = function goToPage(pageName) {
 	  return {
-	    type: 'GO_TO_CREATE_POST'
+	    type: pageName.toUpperCase()
 	  };
 	};
 
-	var createPost = exports.createPost = function createPost(title, text, userName) {
+	var showPost = exports.showPost = function showPost(postId) {
+	  return {
+	    type: "SHOW_POST",
+	    currentPost: postId
+	  };
+	};
+
+	var nextPostId = 0;
+	var createPost = exports.createPost = function createPost(title, text, author) {
 	  return {
 	    type: 'CREATE_POST',
+	    id: nextPostId++,
 	    title: title,
 	    text: text,
-	    userName: userName
+	    author: author
 	  };
 	};
 
@@ -40039,7 +40103,7 @@
 
 	var Header = function Header(_ref) {
 	  var onLogout = _ref.onLogout;
-	  var onGoToCreatePostPage = _ref.onGoToCreatePostPage;
+	  var onGoToPage = _ref.onGoToPage;
 
 	  return _react2.default.createElement(
 	    'header',
@@ -40057,8 +40121,30 @@
 	      _react2.default.createElement(
 	        _reactBootstrap.Button,
 	        {
-	          onClick: onGoToCreatePostPage },
+	          onClick: function onClick() {
+	            onGoToPage('go_to_create_post');
+	          } },
 	        'Create Post'
+	      ),
+	      _react2.default.createElement(
+	        _reactBootstrap.Button,
+	        {
+	          filter: 'SHOW_ALL',
+	          onClick: function onClick() {
+	            onGoToPage('all_posts');
+	          }
+	        },
+	        'All posts'
+	      ),
+	      _react2.default.createElement(
+	        _reactBootstrap.Button,
+	        {
+	          filter: 'SHOW_OWN',
+	          onClick: function onClick() {
+	            onGoToPage('own_posts');
+	          }
+	        },
+	        'Only own posts'
 	      )
 	    )
 	  );
@@ -40078,28 +40164,27 @@
 
 	var _reactRedux = __webpack_require__(169);
 
-	var _createPost2 = __webpack_require__(451);
+	var _createPost = __webpack_require__(451);
 
-	var _createPost3 = _interopRequireDefault(_createPost2);
+	var _createPost2 = _interopRequireDefault(_createPost);
 
 	var _actions = __webpack_require__(448);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var mapStateToProps = function mapStateToProps(state) {
-	  console.log(state);
 	  return state;
 	};
 
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	  return {
-	    createPost: function createPost(title, text, userName) {
-	      return dispatch((0, _actions.createPost)(title, text, userName));
+	    onCreatePost: function onCreatePost(title, text, author) {
+	      return dispatch((0, _actions.createPost)(title, text, author));
 	    }
 	  };
 	};
 
-	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_createPost3.default);
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_createPost2.default);
 
 /***/ },
 /* 451 */
@@ -40119,39 +40204,215 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var createPost = _react2.default.createClass({
-	  displayName: 'createPost',
+	var CreatePost = _react2.default.createClass({
+	  displayName: 'CreatePost',
 	  onClick: function onClick() {
-	    this.props.onLogin(this.loginInput.getValue());
+	    this.props.onCreatePost(this.titleInput.getValue(), this.textInput.getValue(), this.props.currentUser);
 	  },
 	  render: function render() {
 	    var _this = this;
 
 	    return _react2.default.createElement(
-	      'div',
-	      null,
-	      _react2.default.createElement(Input, {
+	      'section',
+	      { 'class': 'createPost' },
+	      _react2.default.createElement(_reactBootstrap.Input, {
 	        type: 'text',
-	        placeholder: 'Enter login',
-	        label: 'Login',
+	        placeholder: 'Enter title',
+	        label: 'Title',
 	        bsSize: 'medium',
 	        hasFeedback: true,
 	        ref: function ref(_ref) {
-	          return _this.loginInput = _ref;
+	          return _this.titleInput = _ref;
+	        }
+	      }),
+	      _react2.default.createElement(_reactBootstrap.Input, {
+	        type: 'textarea',
+	        placeholder: 'Enter text',
+	        label: 'Text',
+	        bsSize: 'medium',
+	        maxlength: '140',
+	        hasFeedback: true,
+	        ref: function ref(_ref2) {
+	          return _this.textInput = _ref2;
 	        }
 	      }),
 	      _react2.default.createElement(
 	        _reactBootstrap.Button,
 	        {
 	          bsStyle: 'primary',
-	          onClick: this.onClick },
-	        'Log in'
+	          onClick: this.onClick
+	        },
+	        'CreatePost'
 	      )
 	    );
 	  }
 	});
 
-	exports.default = createPost;
+	exports.default = CreatePost;
+
+/***/ },
+/* 452 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _reactRedux = __webpack_require__(169);
+
+	var _postsList = __webpack_require__(453);
+
+	var _postsList2 = _interopRequireDefault(_postsList);
+
+	var _actions = __webpack_require__(448);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var filterPosts = function filterPosts(posts, filter, user) {
+	  switch (filter) {
+	    case 'SHOW_ALL':
+	      return posts;
+	    case 'SHOW_OWN':
+	      return posts.filter(function (post) {
+	        return post.author === user;
+	      });
+	  }
+	};
+
+	var mapStateToProps = function mapStateToProps(state, ownProps) {
+	  return {
+	    posts: filterPosts(state.posts, ownProps.filter, state.currentUser)
+	  };
+	};
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps)(_postsList2.default);
+
+/***/ },
+/* 453 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _post = __webpack_require__(454);
+
+	var _post2 = _interopRequireDefault(_post);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var PostsList = function PostsList(_ref) {
+	  var posts = _ref.posts;
+	  return _react2.default.createElement(
+	    'section',
+	    { className: 'postsList' },
+	    posts.map(function (post) {
+	      return _react2.default.createElement(_post2.default, _extends({ key: post.id }, post, { list: true }));
+	    })
+	  );
+	};
+
+	exports.default = PostsList;
+
+/***/ },
+/* 454 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _reactRedux = __webpack_require__(169);
+
+	var _post = __webpack_require__(455);
+
+	var _post2 = _interopRequireDefault(_post);
+
+	var _actions = __webpack_require__(448);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var mapStateToProps = function mapStateToProps(state, ownProp) {
+	  if (ownProp.list) return state;
+
+	  var post = state.posts.filter(function (post) {
+	    return post.id === state.currentPost;
+	  });
+
+	  return Object.assign({}, post[0]);
+	};
+
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	  return {
+	    onClickPost: function onClickPost(postId) {
+	      return dispatch((0, _actions.showPost)(postId));
+	    }
+	  };
+	};
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_post2.default);
+
+/***/ },
+/* 455 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Post = _react2.default.createClass({
+	  displayName: "Post",
+	  onClick: function onClick() {
+	    this.props.onClickPost(this.props.id);
+	  },
+	  render: function render() {
+	    return _react2.default.createElement(
+	      "article",
+	      {
+	        className: "post",
+	        onClick: this.onClick
+	      },
+	      _react2.default.createElement(
+	        "h1",
+	        null,
+	        this.props.title
+	      ),
+	      _react2.default.createElement(
+	        "em",
+	        null,
+	        "Author: ",
+	        this.props.author
+	      ),
+	      _react2.default.createElement(
+	        "p",
+	        null,
+	        this.props.text
+	      )
+	    );
+	  }
+	});
+
+	exports.default = Post;
 
 /***/ }
 /******/ ]);

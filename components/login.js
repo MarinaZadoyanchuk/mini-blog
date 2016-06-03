@@ -8,13 +8,17 @@ const Login = React.createClass({
     },
     render() {
       return (
-        <div>
+        <form>
           <Input
             type="text"
             placeholder="Enter login"
+            minlength="5"
+            required
             label="Login"
             bsSize="medium"
             hasFeedback
+            pattern=".{3,}"
+            required="required"
             ref={ (ref) => this.loginInput = ref }
           />
           <Button
@@ -22,7 +26,7 @@ const Login = React.createClass({
             onClick={this.onClick}>
             Log in
           </Button>
-        </div>
+        </form>
       )
     }
 })

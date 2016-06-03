@@ -1,17 +1,14 @@
 import { connect } from 'react-redux';
-import createPostComponent from '../components/createPost';
+import CreatePostComponent from '../components/createPost';
 import { createPost } from '../actions'
 
-const mapStateToProps = (state) => {
-  console.log(state);
-  return state
-}
+const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createPost: (title, text, userName) =>  dispatch(createPost(title, text, userName))
+    onCreatePost: (title, text, author) =>  dispatch(createPost(title, text, author))
   }
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(createPostComponent)
+export default connect(mapStateToProps, mapDispatchToProps)(CreatePostComponent)

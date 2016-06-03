@@ -1,21 +1,41 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
+import {Input, Button} from 'react-bootstrap';
 
 
-const createPost = React.createClass({
+const CreatePost = React.createClass({
   onClick() {
-      console.log("dsdsd");
+    this.props.onCreatePost( this.titleInput.getValue(),this.textInput.getValue(),this.props.currentUser);
+   
   },
   render() {
     return (
-        <Button
-          bsStyle="primary"
-          onClick={this.onClick}
-        >
-          CreatePost
-        </Button>
+        <section class="createPost">
+          <Input
+            type="text"
+            placeholder="Enter title"
+            label="Title"
+            bsSize="medium"
+            hasFeedback
+            ref={ (ref) => this.titleInput = ref }
+          />
+          <Input
+            type="textarea"
+            placeholder="Enter text"
+            label="Text"
+            bsSize="medium"
+            maxlength="140"
+            hasFeedback
+            ref={ (ref) => this.textInput = ref }
+          />
+          <Button
+            bsStyle="primary"
+            onClick={this.onClick}
+          >
+            CreatePost
+          </Button>
+        </section>
     )
   }
 })
   
-export default createPost
+export default CreatePost

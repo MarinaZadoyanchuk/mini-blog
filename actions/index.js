@@ -12,17 +12,27 @@ export const logout = () => {
     }
 }
 
-export const goToCreatePostPage = () => {
+export const goToPage = (pageName) => {
   return {
-    type: 'GO_TO_CREATE_POST'
+    type: pageName.toUpperCase()
   }
 }
 
-export const createPost = (title, text, userName) => {
+export const showPost = (postId) => {
   return {
-    type: 'CREATE_POST',
-    title,
-    text,
-    userName
+    type: "SHOW_POST",
+    currentPost: postId
   }
 }
+
+let nextPostId = 0;
+export const createPost = (title, text, author) => {
+  return {
+    type: 'CREATE_POST',
+    id: nextPostId++,
+    title,
+    text,
+    author
+  }
+}
+
