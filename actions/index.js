@@ -36,3 +36,14 @@ export const createPost = (title, text, author) => {
   }
 }
 
+let nextCommentId = 0;
+
+export const createComment = (text, author, postId) => {
+  return {
+    type: 'CREATE_COMMENT',
+    id: nextCommentId++,
+    text,
+    author,
+    postId
+  }
+}

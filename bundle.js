@@ -21986,11 +21986,29 @@
 	  return state;
 	};
 
+	var comments = function comments() {
+	  var state = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case 'CREATE_COMMENT':
+	      return [].concat(_toConsumableArray(state), [{
+	        id: action.id,
+	        text: action.text,
+	        author: action.author,
+	        postId: action.postId
+	      }]);
+	  }
+
+	  return state;
+	};
+
 	var mainReducer = exports.mainReducer = (0, _redux.combineReducers)({
 	  users: users,
 	  currentPage: currentPage,
 	  currentUser: currentUser,
 	  currentPost: currentPost,
+	  comments: comments,
 	  posts: posts
 	});
 
@@ -40083,6 +40101,18 @@
 	  };
 	};
 
+	var nextCommentId = 0;
+
+	var createComment = exports.createComment = function createComment(text, author, postId) {
+	  return {
+	    type: 'CREATE_COMMENT',
+	    id: nextCommentId++,
+	    text: text,
+	    author: author,
+	    postId: postId
+	  };
+	};
+
 /***/ },
 /* 449 */
 /***/ function(module, exports, __webpack_require__) {
@@ -40368,7 +40398,7 @@
 /* 455 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -40378,41 +40408,222 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _commentsList = __webpack_require__(456);
+
+	var _commentsList2 = _interopRequireDefault(_commentsList);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var Post = _react2.default.createClass({
-	  displayName: "Post",
+	  displayName: 'Post',
 	  onClick: function onClick() {
 	    this.props.onClickPost(this.props.id);
 	  },
 	  render: function render() {
 	    return _react2.default.createElement(
-	      "article",
-	      {
-	        className: "post",
-	        onClick: this.onClick
-	      },
+	      'div',
+	      null,
 	      _react2.default.createElement(
-	        "h1",
-	        null,
-	        this.props.title
+	        'article',
+	        {
+	          className: 'post',
+	          onClick: this.onClick
+	        },
+	        _react2.default.createElement(
+	          'h1',
+	          null,
+	          this.props.title
+	        ),
+	        _react2.default.createElement(
+	          'em',
+	          null,
+	          'Author: ',
+	          this.props.author
+	        ),
+	        _react2.default.createElement(
+	          'p',
+	          null,
+	          this.props.text
+	        )
 	      ),
-	      _react2.default.createElement(
-	        "em",
-	        null,
-	        "Author: ",
-	        this.props.author
-	      ),
-	      _react2.default.createElement(
-	        "p",
-	        null,
-	        this.props.text
-	      )
+	      !this.props.list ? _react2.default.createElement(_commentsList2.default, null) : ''
 	    );
 	  }
 	});
 
 	exports.default = Post;
+
+/***/ },
+/* 456 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _reactRedux = __webpack_require__(169);
+
+	var _commentsList = __webpack_require__(457);
+
+	var _commentsList2 = _interopRequireDefault(_commentsList);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var getCommentsByPostId = function getCommentsByPostId(comments, postId) {
+	  return comments.filter(function (comment) {
+	    return comment.postId == postId;
+	  });
+	};
+
+	var mapStateToProps = function mapStateToProps(state) {
+	  console.log(state.comments, state.currentPost);
+	  return {
+	    comments: getCommentsByPostId(state.comments, state.currentPost)
+	  };
+	};
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps)(_commentsList2.default);
+
+/***/ },
+/* 457 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _createComment = __webpack_require__(458);
+
+	var _createComment2 = _interopRequireDefault(_createComment);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var CommentsList = function CommentsList(_ref) {
+	  var comments = _ref.comments;
+	  return _react2.default.createElement(
+	    'section',
+	    { className: 'commentsList' },
+	    _react2.default.createElement(_createComment2.default, null),
+	    comments.map(function (comment) {
+	      return _react2.default.createElement(
+	        'aside',
+	        { key: comment.id },
+	        _react2.default.createElement(
+	          'h1',
+	          null,
+	          comment.author
+	        ),
+	        _react2.default.createElement(
+	          'p',
+	          null,
+	          comment.text
+	        )
+	      );
+	    })
+	  );
+	};
+
+	exports.default = CommentsList;
+
+/***/ },
+/* 458 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _reactRedux = __webpack_require__(169);
+
+	var _createComment = __webpack_require__(459);
+
+	var _createComment2 = _interopRequireDefault(_createComment);
+
+	var _actions = __webpack_require__(448);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var mapStateToProps = function mapStateToProps(state) {
+	  return state;
+	};
+
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	  return {
+	    onCreateComment: function onCreateComment(text, author, postId) {
+	      return dispatch((0, _actions.createComment)(text, author, postId));
+	    }
+	  };
+	};
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_createComment2.default);
+
+/***/ },
+/* 459 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactBootstrap = __webpack_require__(196);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var CommentForm = _react2.default.createClass({
+	  displayName: 'CommentForm',
+	  onClick: function onClick() {
+	    this.props.onCreateComment(this.textInput.getValue(), this.props.currentUser, this.props.currentPost);
+	  },
+	  render: function render() {
+	    var _this = this;
+
+	    return _react2.default.createElement(
+	      'section',
+	      null,
+	      _react2.default.createElement(
+	        'h1',
+	        null,
+	        'Your comment'
+	      ),
+	      _react2.default.createElement(_reactBootstrap.Input, {
+	        type: 'textarea',
+	        placeholder: 'Enter comment',
+	        bsSize: 'medium',
+	        maxlength: '140',
+	        hasFeedback: true,
+	        ref: function ref(_ref) {
+	          return _this.textInput = _ref;
+	        }
+	      }),
+	      _react2.default.createElement(
+	        _reactBootstrap.Button,
+	        {
+	          bsStyle: 'primary',
+	          onClick: this.onClick
+	        },
+	        'CreatePost'
+	      )
+	    );
+	  }
+	});
+
+	exports.default = CommentForm;
 
 /***/ }
 /******/ ]);

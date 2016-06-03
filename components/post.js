@@ -1,4 +1,5 @@
 import React from 'react';
+import CommentsList from '../containers/commentsList';
 
 const Post = React.createClass({
   onClick() {
@@ -6,15 +7,18 @@ const Post = React.createClass({
   },
   render() {
     return (
-      <article
-        className="post"
-        onClick={this.onClick}
-      >
-        <h1>{this.props.title}</h1>
-        <em>Author: {this.props.author}</em>
-
-        <p>{this.props.text}</p>
-      </article>
+      <div>
+        <article
+          className="post"
+          onClick={this.onClick}
+        >
+          <h1>{this.props.title}</h1>
+          <em>Author: {this.props.author}</em>
+  
+          <p>{this.props.text}</p>
+        </article>
+        {!this.props.list ? <CommentsList /> : ''}
+      </div>
     )
   }
 })

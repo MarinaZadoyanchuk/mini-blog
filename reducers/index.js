@@ -68,11 +68,30 @@ const posts = (state = [], action) => {
   return state;
 }
 
+
+const comments = (state = [], action) => {
+  switch (action.type) {
+    case 'CREATE_COMMENT':
+      return [
+        ...state,
+        {
+          id: action.id,
+          text: action.text,
+          author: action.author,
+          postId: action.postId
+        }
+      ]
+  }
+
+  return state;
+}
+
 export const mainReducer = combineReducers({
   users,
   currentPage,
   currentUser,
   currentPost,
+  comments,
   posts
 })
 
