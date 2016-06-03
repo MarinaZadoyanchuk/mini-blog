@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import AppComponent from '../components/app';
-import { logout, goToPage, showPost } from '../actions'
+import { logout, goToPage } from '../actions'
 
 
 

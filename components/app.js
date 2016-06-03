@@ -6,44 +6,42 @@ import PostsList from '../containers/postsList';
 import Post from '../containers/post';
 
 const App = ({currentPage, currentUser, currentPost, onLogout, onGoToPage, posts}) => {
+  const header = <Header onLogout={onLogout} onGoToPage={onGoToPage} />;
+  
   switch (currentPage) {
     case 'main':
-      return (<div>
-        <Header onLogout={onLogout} onGoToPage={onGoToPage} />
-        { currentUser }
-      </div>)
+      return (
+        <article>
+          {header}
+          <PostsList filter="SHOW_ALL" />
+        </article>
+      )
     case 'login':
       return <Login />
+
     case 'createPost':
       return (
-        <div>
-          <Header onLogout={onLogout} onGoToPage={onGoToPage} />
+        <article>
+          {header}
           <CreatePostForm />
-        </div>
-      )
-    case 'posts': 
-      return (
-        <div>
-          <Header onLogout={onLogout} onGoToPage={onGoToPage}/>
-          <PostsList filter="SHOW_ALL" />
-        </div>
+        </article>
       )
     case 'own_posts':
       return (
-        <div>
-          <Header onLogout={onLogout} onGoToPage={onGoToPage} />
+        <article>
+          {header}
           <PostsList filter="SHOW_OWN" />
-        </div>
+        </article>
       )
-    
+
     case 'post':
       return (
-        <div>
-          <Header onLogout={onLogout} onGoToPage={onGoToPage} />
+        <article>
+          {header}
           <Post />
-        </div>
+        </article>
       )
-    
+
   }
 }
 

@@ -5,7 +5,7 @@ import {Input, Button} from 'react-bootstrap';
 const CreatePost = React.createClass({
   onClick() {
     this.props.onCreatePost( this.titleInput.getValue(),this.textInput.getValue(),this.props.currentUser);
-   
+    this.props.goToPosts('own_posts');
   },
   render() {
     return (

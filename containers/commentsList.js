@@ -6,7 +6,6 @@ const getCommentsByPostId = (comments, postId) => {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state.comments, state.currentPost);
   return {
     comments: getCommentsByPostId(state.comments, state.currentPost)
   }

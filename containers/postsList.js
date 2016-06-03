@@ -14,7 +14,9 @@ const filterPosts = (posts, filter, user) => {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    posts: filterPosts(state.posts, ownProps.filter, state.currentUser)
+    posts: filterPosts(state.posts, ownProps.filter, state.currentUser),
+    currentPage: state.currentPage,
+    currentUser: state.currentUser
   }
 }
 

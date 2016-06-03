@@ -3,7 +3,6 @@ import CommentForm from '../containers/createComment';
 
 const CommentsList = ({comments}) => (
   <section className="commentsList">
-    <CommentForm />
     {comments.map((comment) => {
       return (
         <aside key={comment.id}>
@@ -12,6 +11,8 @@ const CommentsList = ({comments}) => (
         </aside>
       )
     })}
+
+    <CommentForm />
   </section>
 )
 

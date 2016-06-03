@@ -1,7 +1,84 @@
+/***/
+body, h1, dl, dt, dd {
+    margin: 0;
+}
+
+a, fieldset, button {
+    all: unset;
+}
+h1 {
+    line-height: inherit;
+}
+
+fieldset{
+    display: block;
+}
+em {
+    color: #A2A2A2;
+}
+/***/
+html {
+    background: #E1F5FE;
+}
+
+body{
+    max-width: 940px;
+    padding: 20px 40px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#root {
+
+}
+
+.nav-buttons {
+    display: flex;
+    height: 100px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.loginForm {
+    max-width: 400px;
+}
+
+.postsList {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
 .postsList .post {
     cursor: pointer;
-    border-bottom: 1px solid #e1e8ed;
 }
 .postsList .post:hover {
     background-color: #f5f8fa;
+}
+
+.postsList .post h1 {
+    font-size: 30px;
+    font-style: italic;
+}
+
+.post, .commentsList aside {
+    border: 1px solid #e1e8ed;
+    padding: 10px 20px;
+    background-clip: padding-box;
+}
+
+.post .postLike {
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.commentsList {
+    border-top: 3px solid #0084B4;
+}
+
+.commentsList h1 {
+    font-size: 25px;
+}
+
+.addComment {
+    margin-top: 20px;
 }

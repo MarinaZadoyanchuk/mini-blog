@@ -18,13 +18,12 @@ const users = (state = [], action) => {
 const currentPage = (state = 'login', action) => {
   switch (action.type) {
     case 'LOG_IN':
+    case 'HOME':
       return 'main';
     case 'LOG_OUT':
       return 'login';
     case 'GO_TO_CREATE_POST':
       return 'createPost';
-    case 'ALL_POSTS':
-      return 'posts';
     case 'OWN_POSTS':
       return 'own_posts';
     case 'SHOW_POST':
@@ -60,9 +59,19 @@ const posts = (state = [], action) => {
           id: action.id,
           text: action.text,
           title: action.title,
-          author: action.author
+          author: action.author,
+          likes: action.likes
         }
       ]
+    case 'LIKE_POST': {
+      return state.map((post) => {
+        if (post.id === action.postId) {
+          post.likes += 1;
+        }
+        
+        return post;
+      })
+    }
   }
   
   return state;

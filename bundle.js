@@ -21930,13 +21930,12 @@
 
 	  switch (action.type) {
 	    case 'LOG_IN':
+	    case 'HOME':
 	      return 'main';
 	    case 'LOG_OUT':
 	      return 'login';
 	    case 'GO_TO_CREATE_POST':
 	      return 'createPost';
-	    case 'ALL_POSTS':
-	      return 'posts';
 	    case 'OWN_POSTS':
 	      return 'own_posts';
 	    case 'SHOW_POST':
@@ -21979,8 +21978,19 @@
 	        id: action.id,
 	        text: action.text,
 	        title: action.title,
-	        author: action.author
+	        author: action.author,
+	        likes: action.likes
 	      }]);
+	    case 'LIKE_POST':
+	      {
+	        return state.map(function (post) {
+	          if (post.id === action.postId) {
+	            post.likes += 1;
+	          }
+
+	          return post;
+	        });
+	      }
 	  }
 
 	  return state;
@@ -22095,43 +22105,39 @@
 	  var onGoToPage = _ref.onGoToPage;
 	  var posts = _ref.posts;
 
+	  var header = _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToPage: onGoToPage });
+
 	  switch (currentPage) {
 	    case 'main':
 	      return _react2.default.createElement(
-	        'div',
+	        'article',
 	        null,
-	        _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToPage: onGoToPage }),
-	        currentUser
+	        header,
+	        _react2.default.createElement(_postsList2.default, { filter: 'SHOW_ALL' })
 	      );
 	    case 'login':
 	      return _react2.default.createElement(_login2.default, null);
+
 	    case 'createPost':
 	      return _react2.default.createElement(
-	        'div',
+	        'article',
 	        null,
-	        _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToPage: onGoToPage }),
+	        header,
 	        _react2.default.createElement(_createPost2.default, null)
-	      );
-	    case 'posts':
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToPage: onGoToPage }),
-	        _react2.default.createElement(_postsList2.default, { filter: 'SHOW_ALL' })
 	      );
 	    case 'own_posts':
 	      return _react2.default.createElement(
-	        'div',
+	        'article',
 	        null,
-	        _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToPage: onGoToPage }),
+	        header,
 	        _react2.default.createElement(_postsList2.default, { filter: 'SHOW_OWN' })
 	      );
 
 	    case 'post':
 	      return _react2.default.createElement(
-	        'div',
+	        'article',
 	        null,
-	        _react2.default.createElement(_header2.default, { onLogout: onLogout, onGoToPage: onGoToPage }),
+	        header,
 	        _react2.default.createElement(_post2.default, null)
 	      );
 
@@ -22196,37 +22202,56 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 	var Login = _react2.default.createClass({
 	  displayName: 'Login',
+	  getInitialState: function getInitialState() {
+	    return {
+	      allowLogin: false
+	    };
+	  },
+	  handleChange: function handleChange(e) {
+	    if (this.loginInput.getValue().length > 2) {
+	      this.setState({
+	        allowLogin: true
+	      });
+	    } else {
+	      this.setState({
+	        allowLogin: false
+	      });
+	    }
+	  },
 	  onClick: function onClick() {
 	    this.props.onLogin(this.loginInput.getValue());
 	  },
 	  render: function render() {
-	    var _this = this,
-	        _React$createElement;
+	    var _this = this;
 
 	    return _react2.default.createElement(
-	      'form',
-	      null,
-	      _react2.default.createElement(_reactBootstrap.Input, (_React$createElement = {
+	      'section',
+	      { className: 'loginForm' },
+	      _react2.default.createElement(
+	        'h1',
+	        null,
+	        'Login page'
+	      ),
+	      _react2.default.createElement(_reactBootstrap.Input, {
 	        type: 'text',
 	        placeholder: 'Enter login',
-	        minlength: '5',
-	        required: true,
-	        label: 'Login',
+	        className: 'loginInput',
 	        bsSize: 'medium',
 	        hasFeedback: true,
-	        pattern: '.{3,}'
-	      }, _defineProperty(_React$createElement, 'required', 'required'), _defineProperty(_React$createElement, 'ref', function ref(_ref) {
-	        return _this.loginInput = _ref;
-	      }), _React$createElement)),
+	        onChange: this.handleChange,
+	        ref: function ref(_ref) {
+	          return _this.loginInput = _ref;
+	        }
+	      }),
 	      _react2.default.createElement(
 	        _reactBootstrap.Button,
 	        {
 	          bsStyle: 'primary',
-	          onClick: this.onClick },
+	          onClick: this.state.allowLogin ? this.onClick : null,
+	          disabled: !this.state.allowLogin
+	        },
 	        'Log in'
 	      )
 	    );
@@ -40092,12 +40117,22 @@
 
 	var nextPostId = 0;
 	var createPost = exports.createPost = function createPost(title, text, author) {
+	  var likes = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
+
 	  return {
 	    type: 'CREATE_POST',
 	    id: nextPostId++,
 	    title: title,
 	    text: text,
-	    author: author
+	    author: author,
+	    likes: likes
+	  };
+	};
+
+	var likePost = exports.likePost = function likePost(postId) {
+	  return {
+	    type: 'LIKE_POST',
+	    postId: postId
 	  };
 	};
 
@@ -40137,16 +40172,19 @@
 
 	  return _react2.default.createElement(
 	    'header',
-	    null,
+	    { className: 'mainHeader' },
 	    _react2.default.createElement(
 	      _reactBootstrap.ButtonToolbar,
-	      null,
+	      { className: 'nav-buttons' },
 	      _react2.default.createElement(
 	        _reactBootstrap.Button,
 	        {
-	          bsStyle: 'primary',
-	          onClick: onLogout },
-	        'Log out'
+	          filter: 'SHOW_ALL',
+	          onClick: function onClick() {
+	            onGoToPage('home');
+	          }
+	        },
+	        'Home'
 	      ),
 	      _react2.default.createElement(
 	        _reactBootstrap.Button,
@@ -40159,22 +40197,18 @@
 	      _react2.default.createElement(
 	        _reactBootstrap.Button,
 	        {
-	          filter: 'SHOW_ALL',
-	          onClick: function onClick() {
-	            onGoToPage('all_posts');
-	          }
-	        },
-	        'All posts'
-	      ),
-	      _react2.default.createElement(
-	        _reactBootstrap.Button,
-	        {
 	          filter: 'SHOW_OWN',
 	          onClick: function onClick() {
 	            onGoToPage('own_posts');
 	          }
 	        },
 	        'Only own posts'
+	      ),
+	      _react2.default.createElement(
+	        _reactBootstrap.Button,
+	        {
+	          onClick: onLogout },
+	        'Log out'
 	      )
 	    )
 	  );
@@ -40210,6 +40244,9 @@
 	  return {
 	    onCreatePost: function onCreatePost(title, text, author) {
 	      return dispatch((0, _actions.createPost)(title, text, author));
+	    },
+	    goToPosts: function goToPosts(pageName) {
+	      return dispatch((0, _actions.goToPage)(pageName));
 	    }
 	  };
 	};
@@ -40238,6 +40275,7 @@
 	  displayName: 'CreatePost',
 	  onClick: function onClick() {
 	    this.props.onCreatePost(this.titleInput.getValue(), this.textInput.getValue(), this.props.currentUser);
+	    this.props.goToPosts('own_posts');
 	  },
 	  render: function render() {
 	    var _this = this;
@@ -40313,7 +40351,9 @@
 
 	var mapStateToProps = function mapStateToProps(state, ownProps) {
 	  return {
-	    posts: filterPosts(state.posts, ownProps.filter, state.currentUser)
+	    posts: filterPosts(state.posts, ownProps.filter, state.currentUser),
+	    currentPage: state.currentPage,
+	    currentUser: state.currentUser
 	  };
 	};
 
@@ -40343,9 +40383,21 @@
 
 	var PostsList = function PostsList(_ref) {
 	  var posts = _ref.posts;
+	  var currentPage = _ref.currentPage;
+	  var currentUser = _ref.currentUser;
 	  return _react2.default.createElement(
 	    'section',
 	    { className: 'postsList' },
+	    currentPage == 'own_posts' ? _react2.default.createElement(
+	      'h1',
+	      null,
+	      'Your posts'
+	    ) : _react2.default.createElement(
+	      'h1',
+	      null,
+	      'Hi, ',
+	      currentUser
+	    ),
 	    posts.map(function (post) {
 	      return _react2.default.createElement(_post2.default, _extends({ key: post.id }, post, { list: true }));
 	    })
@@ -40381,13 +40433,16 @@
 	    return post.id === state.currentPost;
 	  });
 
-	  return Object.assign({}, post[0]);
+	  return Object.assign({}, post[0], { currentPage: state.currentPage });
 	};
 
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	  return {
 	    onClickPost: function onClickPost(postId) {
 	      return dispatch((0, _actions.showPost)(postId));
+	    },
+	    onClickLike: function onClickLike(postId) {
+	      return dispatch((0, _actions.likePost)(postId));
 	    }
 	  };
 	};
@@ -40416,18 +40471,22 @@
 
 	var Post = _react2.default.createClass({
 	  displayName: 'Post',
-	  onClick: function onClick() {
+	  onClickPost: function onClickPost(e) {
+	    e.preventDefault();
 	    this.props.onClickPost(this.props.id);
+	  },
+	  onClickLike: function onClickLike() {
+	    this.props.onClickLike(this.props.id);
 	  },
 	  render: function render() {
 	    return _react2.default.createElement(
-	      'div',
+	      'section',
 	      null,
 	      _react2.default.createElement(
 	        'article',
 	        {
 	          className: 'post',
-	          onClick: this.onClick
+	          onClick: this.onClickPost
 	        },
 	        _react2.default.createElement(
 	          'h1',
@@ -40444,7 +40503,17 @@
 	          'p',
 	          null,
 	          this.props.text
-	        )
+	        ),
+	        this.props.currentPage == 'post' ? _react2.default.createElement(
+	          'div',
+	          null,
+	          _react2.default.createElement('span', { className: 'glyphicon glyphicon-heart-empty postLike', onClick: this.onClickLike }),
+	          _react2.default.createElement(
+	            'span',
+	            null,
+	            this.props.likes
+	          )
+	        ) : ''
 	      ),
 	      !this.props.list ? _react2.default.createElement(_commentsList2.default, null) : ''
 	    );
@@ -40478,7 +40547,6 @@
 	};
 
 	var mapStateToProps = function mapStateToProps(state) {
-	  console.log(state.comments, state.currentPost);
 	  return {
 	    comments: getCommentsByPostId(state.comments, state.currentPost)
 	  };
@@ -40511,7 +40579,6 @@
 	  return _react2.default.createElement(
 	    'section',
 	    { className: 'commentsList' },
-	    _react2.default.createElement(_createComment2.default, null),
 	    comments.map(function (comment) {
 	      return _react2.default.createElement(
 	        'aside',
@@ -40527,7 +40594,8 @@
 	          comment.text
 	        )
 	      );
-	    })
+	    }),
+	    _react2.default.createElement(_createComment2.default, null)
 	  );
 	};
 
@@ -40587,37 +40655,48 @@
 
 	var CommentForm = _react2.default.createClass({
 	  displayName: 'CommentForm',
+	  getInitialState: function getInitialState() {
+	    return {
+	      text: ''
+	    };
+	  },
 	  onClick: function onClick() {
 	    this.props.onCreateComment(this.textInput.getValue(), this.props.currentUser, this.props.currentPost);
+	    this.setState(this.getInitialState());
+	  },
+	  onChange: function onChange() {
+	    this.setState({
+	      text: this.textInput.getValue()
+	    });
 	  },
 	  render: function render() {
 	    var _this = this;
 
 	    return _react2.default.createElement(
 	      'section',
-	      null,
+	      { className: 'addComment' },
 	      _react2.default.createElement(
-	        'h1',
+	        'form',
 	        null,
-	        'Your comment'
-	      ),
-	      _react2.default.createElement(_reactBootstrap.Input, {
-	        type: 'textarea',
-	        placeholder: 'Enter comment',
-	        bsSize: 'medium',
-	        maxlength: '140',
-	        hasFeedback: true,
-	        ref: function ref(_ref) {
-	          return _this.textInput = _ref;
-	        }
-	      }),
-	      _react2.default.createElement(
-	        _reactBootstrap.Button,
-	        {
-	          bsStyle: 'primary',
-	          onClick: this.onClick
-	        },
-	        'CreatePost'
+	        _react2.default.createElement(_reactBootstrap.Input, {
+	          type: 'textarea',
+	          value: this.state.text,
+	          placeholder: 'Enter comment',
+	          bsSize: 'medium',
+	          onChange: this.onChange,
+	          hasFeedback: true,
+	          ref: function ref(_ref) {
+	            return _this.textInput = _ref;
+	          }
+	        }),
+	        _react2.default.createElement(
+	          _reactBootstrap.Button,
+	          {
+	            bsStyle: 'primary',
+	            onClick: this.onClick
+	          },
+	          'Add Comment'
+	        )
 	      )
 	    );
 	  }

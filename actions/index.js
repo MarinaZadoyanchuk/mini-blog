@@ -26,13 +26,21 @@ export const showPost = (postId) => {
 }
 
 let nextPostId = 0;
-export const createPost = (title, text, author) => {
+export const createPost = (title, text, author, likes = 0) => {
   return {
     type: 'CREATE_POST',
     id: nextPostId++,
     title,
     text,
-    author
+    author,
+    likes
+  }
+}
+
+export const likePost = (postId) => {
+  return {
+    type: 'LIKE_POST',
+    postId
   }
 }
 
